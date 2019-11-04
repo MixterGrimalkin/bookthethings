@@ -1,6 +1,8 @@
 class Customer < ApplicationRecord
   validates_presence_of :name, :email
 
+  belongs_to :user
+
   has_many :bookings
 
   has_many :customer_registrations

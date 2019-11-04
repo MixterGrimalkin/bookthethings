@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191104142213) do
+ActiveRecord::Schema.define(version: 20191104184722) do
 
   create_table "availabilities", force: :cascade do |t|
     t.integer "provider_id"
@@ -83,12 +83,10 @@ ActiveRecord::Schema.define(version: 20191104142213) do
   end
 
   create_table "customers", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "phone"
     t.string "invite_key"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -113,15 +111,13 @@ ActiveRecord::Schema.define(version: 20191104142213) do
   end
 
   create_table "providers", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "phone"
     t.text "description"
     t.string "web_link"
     t.string "photo_url"
     t.integer "company_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id"
   end
 
   create_table "rates", force: :cascade do |t|
@@ -140,6 +136,15 @@ ActiveRecord::Schema.define(version: 20191104142213) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "password_digest"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "phone"
   end
 
 end

@@ -3,4 +3,10 @@ Rails.application.routes.draw do
 
   root 'application#index'
 
+  post 'auth/login', to: 'authentication#authenticate'
+  post 'signup', to: 'users#create'
+
+  get '/companies' => 'companies#all'
+  get '/companies/:id' => 'companies#one'
+
 end
