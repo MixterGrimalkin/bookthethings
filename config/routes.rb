@@ -10,4 +10,7 @@ Rails.application.routes.draw do
   get 'customers/locations', to: 'customers#locations'
   get 'customers/companies', to: 'customers#companies'
 
+  post 'customers/request', to: 'customers#request_customership'
+  post 'customers/enable', to: 'customers#enable_customership'
+
 end
