@@ -6,5 +6,4 @@ RSpec.describe Location, type: :model do
   it { should have_many :providers }
   it { should have_many :customers }
   it { should have_many :bookings }
-
 end

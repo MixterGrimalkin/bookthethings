@@ -7,8 +7,7 @@ Rails.application.routes.draw do
   post 'signup', to: 'users#create'
 
   get 'customers/details', to: 'customers#details'
-
-  get 'companies' => 'companies#all'
-  get 'companies/:id' => 'companies#one'
+  get 'customers/locations', to: 'customers#locations'
+  get 'customers/companies', to: 'customers#companies'
 
 end

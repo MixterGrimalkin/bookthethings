@@ -4,25 +4,11 @@ RSpec.describe AuthorizeApiRequest do
 
   let(:user) { create(:user) }
 
-  subject(:valid_request) do
-    described_class.new({'Authorization' => token_generator(user.id)})
-  end
-
-  subject(:missing_token) do
-    described_class.new({})
-  end
-
-  subject(:invalid_token) do
-    described_class.new({'Authorization' => token_generator(5)})
-  end
-
-  subject(:expired_token) do
-    described_class.new({'Authorization' => expired_token_generator(user.id)})
-  end
-
-  subject(:fake_token) do
-    described_class.new({'Authorization' => 'foobar'})
-  end
+  subject(:valid_request) { described_class.new({'Authorization' => token_generator(user.id)}) }
+  subject(:missing_token) { described_class.new({}) }
+  subject(:invalid_token) { described_class.new({'Authorization' => token_generator(5)}) }
+  subject(:expired_token) { described_class.new({'Authorization' => expired_token_generator(user.id)}) }
+  subject(:fake_token) { described_class.new({'Authorization' => 'foobar'}) }
 
   describe '#call' do
 
@@ -61,4 +47,5 @@ RSpec.describe AuthorizeApiRequest do
     end
 
   end
+
 end

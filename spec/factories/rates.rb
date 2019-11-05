@@ -4,8 +4,8 @@ FactoryBot.define do
     cost_amount { Faker::Number.number(digits: 4 ) }
     cost_per { [30,60].shuffle.first }
     min_length { [60,120].shuffle.first }
-    # needs provider
-    # needs service
+    provider { create(:provider) }
+    service { create(:service) }
   end
 end
 

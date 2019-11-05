@@ -21,4 +21,5 @@ RSpec.describe AuthenticateUser do
       end
     end
   end
+
 end
