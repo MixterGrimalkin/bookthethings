@@ -1,5 +1,5 @@
 class Customer < ApplicationRecord
-  validates_presence_of :name, :email
+  validates_presence_of :user
 
   belongs_to :user
 

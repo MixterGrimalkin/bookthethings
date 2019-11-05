@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   post 'auth/login', to: 'authentication#authenticate'
   post 'signup', to: 'users#create'
 
-  get '/companies' => 'companies#all'
-  get '/companies/:id' => 'companies#one'
+  get 'customers/details', to: 'customers#details'
+
+  get 'companies' => 'companies#all'
+  get 'companies/:id' => 'companies#one'
 
 end

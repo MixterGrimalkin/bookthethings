@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Companies API', type: :request do
 
   let(:user) { create(:user) }
-  let(:headers) { valid_headers }
+  let(:headers) { valid_headers(user) }
 
   let!(:companies) { create_list(:company, 5) }
   let(:company_id) { companies.first.id }
