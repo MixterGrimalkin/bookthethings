@@ -16,4 +16,8 @@ class ApplicationController < ActionController::API
     raise(ActiveRecord::RecordNotFound, 'User is not a customer') unless @current_user.customer
   end
 
+  def providers_only
+    raise(ActiveRecord::RecordNotFound, 'User is not a provider') unless @current_user.provider
+  end
+
 end

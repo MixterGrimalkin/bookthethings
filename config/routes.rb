@@ -13,4 +13,10 @@ Rails.application.routes.draw do
   post 'customers/request', to: 'customers#request_customership'
   post 'customers/enable', to: 'customers#enable_customership'
 
+  get 'locations', to: 'locations#get_locations'
+  post 'locations/create', to: 'locations#create_location'
+  post 'locations/update/:id', to: 'locations#update_location'
+  post 'locations/link-customer/:id', to: 'locations#link_customer'
+  post 'locations/link-provider/:id', to: 'locations#link_provider'
+
 end
