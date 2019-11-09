@@ -6,10 +6,10 @@ class LocationsController < ApplicationController
   def get_locations
     data = {}
     if (customer = @current_user.customer)
-      data[:customer] = collate_locations(customer.locations)
+      data[:customer] = customer.locations.select(:id, :street_address, :postcode)
     end
     if (provider = @current_user.provider)
-      data[:provider] = collate_locations(provider.locations)
+      data[:provider] = provider.locations.select(:id, :street_address, :postcode)
     end
     json_response(data)
   end
@@ -43,18 +43,6 @@ class LocationsController < ApplicationController
     end
     provider.locations << location
     json_response({message: 'Added provider location'})
-  end
-
-  private
-
-  def collate_locations(locations)
-    locations.collect do |location|
-      {
-          id: location.id,
-          street_address: location.street_address,
-          postcode: location.postcode
-      }
-    end
   end
 
 end
