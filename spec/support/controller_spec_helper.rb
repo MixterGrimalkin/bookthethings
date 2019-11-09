@@ -1,3 +1,4 @@
+# noinspection ALL
 module ControllerSpecHelper
 
   def token_generator(user_id)
@@ -8,16 +9,16 @@ module ControllerSpecHelper
     JsonWebToken.encode({ user_id: user_id }, (Time.now.to_i - 10))
   end
 
-  def valid_headers(user)
+  def invalid_headers
     {
-        'Authorization' => token_generator(user.id),
+        'Authorization' => nil,
         'Content-Type' => 'application/json'
     }
   end
 
-  def invalid_headers
+  def valid_headers(user)
     {
-        'Authorization' => nil,
+        'Authorization' => token_generator(user.id),
         'Content-Type' => 'application/json'
     }
   end
