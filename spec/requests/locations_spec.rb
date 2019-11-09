@@ -205,8 +205,8 @@ RSpec.describe 'Locations API', type: :request do
     end
     context 'when logged in as non-customer' do
       let(:headers) { valid_headers(@provider.user) }
-      it 'responds with 404' do
-        expect(response.status).to eq(404)
+      it 'responds with 401' do
+        expect(response.status).to eq(401)
         expect(response.body).to match(/User is not a customer/)
       end
     end
@@ -257,8 +257,8 @@ RSpec.describe 'Locations API', type: :request do
     end
     context 'when logged in as non-provider' do
       let(:headers) { valid_headers(@customer.user) }
-      it 'responds with 404' do
-        expect(response.status).to eq(404)
+      it 'responds with 401' do
+        expect(response.status).to eq(401)
         expect(response.body).to match(/User is not a provider/)
       end
     end

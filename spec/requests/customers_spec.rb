@@ -36,8 +36,8 @@ RSpec.describe 'Customers API', type: :request do
       end
       context 'when logged in as non-customer user' do
         let(:headers) { valid_headers(@non_customer_user) }
-        it 'responds with 404' do
-          expect(response.status).to eq(404)
+        it 'responds with 401' do
+          expect(response.status).to eq(401)
           expect(response.body).to match(/User is not a customer/)
         end
       end
@@ -70,8 +70,8 @@ RSpec.describe 'Customers API', type: :request do
       end
       context 'when logged in as non-customer user' do
         let(:headers) { valid_headers(@non_customer_user) }
-        it 'responds with 404' do
-          expect(response.status).to eq(404)
+        it 'responds with 401' do
+          expect(response.status).to eq(401)
           expect(response.body).to match(/User is not a customer/)
         end
       end
@@ -109,8 +109,8 @@ RSpec.describe 'Customers API', type: :request do
       end
       context 'when logged in as non-customer user' do
         let(:headers) { valid_headers(@non_customer_user) }
-        it 'responds with 404' do
-          expect(response.status).to eq(404)
+        it 'responds with 401' do
+          expect(response.status).to eq(401)
           expect(response.body).to match(/User is not a customer/)
         end
       end
@@ -204,8 +204,8 @@ RSpec.describe 'Customers API', type: :request do
       end
       context 'when logged in as simple user' do
         let(:headers) { valid_headers(simple_user) }
-        it 'responds with 404' do
-          expect(response.status).to eq(404)
+        it 'responds with 401' do
+          expect(response.status).to eq(401)
           expect(response.body).to match(/User is not a customer/)
         end
       end

@@ -4,6 +4,7 @@ module ExceptionHandler
   class AuthenticationError < StandardError; end
   class MissingToken < StandardError; end
   class InvalidToken < StandardError; end
+  class WrongUserType < StandardError; end
 
   included do
     rescue_from ActiveRecord::RecordNotFound, with: :not_found
@@ -11,6 +12,7 @@ module ExceptionHandler
     rescue_from ExceptionHandler::MissingToken, with: :unprocessable
     rescue_from ExceptionHandler::InvalidToken, with: :unprocessable
     rescue_from ExceptionHandler::AuthenticationError, with: :unauthorized
+    rescue_from ExceptionHandler::WrongUserType, with: :unauthorized
   end
 
   private
