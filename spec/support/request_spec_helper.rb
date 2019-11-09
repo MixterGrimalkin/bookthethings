@@ -16,6 +16,10 @@ module RequestSpecHelper
     compare_objects([:id, :name, :slug, :description, :login_html], api_obj, company)
   end
 
+  def compare_services(api_obj, service)
+    compare_objects([:id, :name, :description], api_obj, service)
+  end
+
   def compare_objects(keys, api_obj, db_obj)
     result = true
     keys.each do |key|
@@ -23,5 +27,6 @@ module RequestSpecHelper
     end
     result
   end
+
 
 end

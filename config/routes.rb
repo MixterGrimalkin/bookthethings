@@ -18,4 +18,10 @@ Rails.application.routes.draw do
   post 'locations/link-customer/:id', to: 'locations#link_customer'
   post 'locations/link-provider/:id', to: 'locations#link_provider'
 
+  get 'services', to: 'services#get_services'
+  post 'services', to: 'services#create_service'
+  put 'services/:service_id', to: 'services#update_service'
+  post 'services/add/:service_id', to: 'services#add_service'
+  post 'services/remove/:service_id', to: 'services#remove_service'
+
 end
