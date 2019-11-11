@@ -24,6 +24,11 @@ module RequestSpecHelper
     compare_objects(keys, api_obj, service, ignore_keys)
   end
 
+  def compare_rates(api_obj, rate, ignore_keys = [])
+    keys = [:id, :day, :start_time, :end_time, :cost_amount, :cost_per, :service_id]
+    compare_objects(keys, api_obj, rate, ignore_keys)
+  end
+
   def compare_objects(keys, api_obj, db_obj, ignore_keys = [])
     result = true
     keys.each do |key|

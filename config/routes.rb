@@ -24,4 +24,9 @@ Rails.application.routes.draw do
   post 'services/add/:service_id', to: 'services#add_service'
   post 'services/remove/:service_id', to: 'services#remove_service'
 
+  get 'services/:service_id/rates', to: 'rates#get_rates'
+  post 'services/:service_id/rates', to: 'rates#create_rate'
+  put 'services/:service_id/rates/:rate_id', to: 'rates#update_rate'
+  delete 'services/:service_id/rates/:rate_id', to: 'rates#delete_rate'
+
 end

@@ -23,4 +23,8 @@ module ControllerSpecHelper
     }
   end
 
+  def time(string)
+    Time.parse(string + ' UTC')
+  end
+
 end

@@ -5,7 +5,7 @@ FactoryBot.define do
       Faker::Time.between(from: Time.parse('08:00'), to: Time.parse('12:00'))
     }
     end_time {
-      Faker::Time.between(from: Time.parse('12:01'), to: Time.parse('17:00'))
+      Faker::Time.between(from: Time.parse('12:00'), to: Time.parse('17:00'))
     }
     cost_amount { Faker::Number.number(digits: 4 ) }
     cost_per { [30,60].shuffle.first }
