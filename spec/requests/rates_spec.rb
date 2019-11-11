@@ -17,10 +17,34 @@ RSpec.shared_examples 'service resource' do
   end
 end
 
+RSpec.shared_examples 'rate resource' do
+  context 'when rate does not exist' do
+    it 'responds with 404 (not found)' do
+      expect(response.status).to eq(404)
+      expect(response.body).to match(/Couldn't find Rate/)
+    end
+  end
+  context 'when rate exists but not in right service' do
+    let(:rate_id) { @rate_b_one.id }
+    it 'responds with 404 (not found)' do
+      expect(response.status).to eq(404)
+      expect(response.body).to match(/Couldn't find Rate/)
+    end
+  end
+end
+
 RSpec.shared_examples 'rate validator' do
   let(:service_id) { @service_a.id }
   context 'when rate is missing all fields' do
-    let(:params) { empty_rate.to_json }
+    let(:params) {
+      {
+          'day' => nil,
+          'start_time' => nil,
+          'end_time' => nil,
+          'cost_amount' => nil,
+          'cost_per' => nil
+      }.to_json
+    }
     it 'returns 422 (unprocessable entitiy)' do
       expect(response.status).to eq(422)
     end
@@ -33,7 +57,15 @@ RSpec.shared_examples 'rate validator' do
     end
   end
   context 'when rate times are backwards' do
-    let(:params) { backward_times_rate.to_json }
+    let(:params) {
+      {
+          'day' => 1,
+          'start_time' => time('14:00'),
+          'end_time' => time('12:00'),
+          'cost_amount' => 1000,
+          'cost_per' => 60
+      }.to_json
+    }
     it 'returns 422 (unprocessable entity)' do
       expect(response.status).to eq(422)
     end
@@ -42,7 +74,15 @@ RSpec.shared_examples 'rate validator' do
     end
   end
   context 'when rate times are too short' do
-    let(:params) { too_short_rate.to_json }
+    let(:params) {
+      {
+          'day' => 1,
+          'start_time' => time('10:00'),
+          'end_time' => time('10:30'),
+          'cost_amount' => 1000,
+          'cost_per' => 60
+      }.to_json
+    }
     it 'returns 422 (unprocessable entity)' do
       expect(response.status).to eq(422)
     end
@@ -51,7 +91,15 @@ RSpec.shared_examples 'rate validator' do
     end
   end
   context 'when times clash with existing rate' do
-    let(:params) { clash_with_a_rate.to_json }
+    let(:params) {
+      {
+          'day' => 2,
+          'start_time' => time('10:00'),
+          'end_time' => time('12:00'),
+          'cost_amount' => 1000,
+          'cost_per' => 60
+      }.to_json
+    }
     it 'returns 422 (unprocessable entity)' do
       expect(response.status).to eq(422)
     end
@@ -100,6 +148,16 @@ RSpec.describe 'Rates API', type: :request do
                          service: @service_c)
   }
 
+  let(:valid_rate) {
+    {
+        'day' => 1,
+        'start_time' => time('10:00'),
+        'end_time' => time('12:00'),
+        'cost_amount' => 1000,
+        'cost_per' => 60
+    }
+  }
+
   let(:service_id) { 0 }
   let(:rate_id) { 0 }
   let(:params) { {}.to_json }
@@ -127,52 +185,6 @@ RSpec.describe 'Rates API', type: :request do
     end
   end
 
-  let(:valid_rate) {
-    {
-        'day' => 1,
-        'start_time' => time('10:00'),
-        'end_time' => time('12:00'),
-        'cost_amount' => 1000,
-        'cost_per' => 60
-    }
-  }
-  let(:clash_with_a_rate) {
-    {
-        'day' => 2,
-        'start_time' => time('10:00'),
-        'end_time' => time('12:00'),
-        'cost_amount' => 1000,
-        'cost_per' => 60
-    }
-  }
-  let(:empty_rate) {
-    {
-        'day' => nil,
-        'start_time' => nil,
-        'end_time' => nil,
-        'cost_amount' => nil,
-        'cost_per' => nil
-    }
-  }
-  let(:backward_times_rate) {
-    {
-        'day' => 1,
-        'start_time' => time('14:00'),
-        'end_time' => time('12:00'),
-        'cost_amount' => 1000,
-        'cost_per' => 60
-    }
-  }
-  let(:too_short_rate) {
-    {
-        day: 1,
-        start_time: time('10:00'),
-        end_time: time('10:30'),
-        cost_amount: 1000,
-        cost_per: 60
-    }
-  }
-
   describe 'POST /services/:service_id/rates' do
     before {
       post "/services/#{service_id}/rates", params: params, headers: headers
@@ -198,6 +210,9 @@ RSpec.describe 'Rates API', type: :request do
           expect(rate.start_time_minutes).to eq(valid_rate['start_time'].seconds_since_midnight / 60)
           expect(rate.end_time_minutes).to eq(valid_rate['end_time'].seconds_since_midnight / 60)
         end
+        it 'returns ID of new rate' do
+          expect(json['id']).to eq(Rate.last.id)
+        end
       end
     end
   end
@@ -213,19 +228,7 @@ RSpec.describe 'Rates API', type: :request do
       it_behaves_like 'service resource'
       context 'when service valid' do
         let(:service_id) { @service_a.id }
-        context 'when rate does not exist' do
-          it 'responds with 404 (not found)' do
-            expect(response.status).to eq(404)
-            expect(response.body).to match(/Couldn't find Rate/)
-          end
-        end
-        context 'when rate exists but not in right service' do
-          let(:rate_id) { @rate_b_one.id }
-          it 'responds with 404 (not found)' do
-            expect(response.status).to eq(404)
-            expect(response.body).to match(/Couldn't find Rate/)
-          end
-        end
+        it_behaves_like 'rate resource'
         context 'when rate exists in right service' do
           let(:rate_id) { @rate_a_one.id }
           it_behaves_like 'rate validator'
@@ -259,19 +262,7 @@ RSpec.describe 'Rates API', type: :request do
       it_behaves_like 'service resource'
       context 'when service valid' do
         let(:service_id) { @service_a.id }
-        context 'when rate does not exist' do
-          it 'responds with 404 (not found)' do
-            expect(response.status).to eq(404)
-            expect(response.body).to match(/Couldn't find Rate/)
-          end
-        end
-        context 'when rate exists but not in right service' do
-          let(:rate_id) { @rate_b_one.id }
-          it 'responds with 404 (not found)' do
-            expect(response.status).to eq(404)
-            expect(response.body).to match(/Couldn't find Rate/)
-          end
-        end
+        it_behaves_like 'rate resource'
         context 'when rate exists in right service' do
           let(:rate_id) { @rate_a_one.id }
           it 'responds with 200 (OK)' do
@@ -285,7 +276,6 @@ RSpec.describe 'Rates API', type: :request do
           end
         end
       end
-
     end
   end
 

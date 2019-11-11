@@ -12,8 +12,8 @@ class RatesController < ApplicationController
   def create_rate
     config = params.permit(*API_KEYS)
     config[:service] = @service
-    Rate.create!(config)
-    json_response({message: 'Rate created'})
+    rate = Rate.create!(config)
+    json_response({message: 'Rate created', id: rate.id})
   end
 
   def update_rate
