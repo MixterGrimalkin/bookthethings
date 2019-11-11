@@ -27,20 +27,8 @@ RSpec.describe 'Customers API', type: :request do
       before {
         get '/customers/details', params: {}, headers: headers
       }
-      context 'when not logged in' do
-        let(:headers) { invalid_headers }
-        it 'responds with 422' do
-          expect(response.status).to eq(422)
-          expect(response.body).to match(/Missing token/)
-        end
-      end
-      context 'when logged in as non-customer user' do
-        let(:headers) { valid_headers(@non_customer_user) }
-        it 'responds with 401' do
-          expect(response.status).to eq(401)
-          expect(response.body).to match(/User is not a customer/)
-        end
-      end
+      it_behaves_like 'authenticated controller'
+      it_behaves_like 'customer-only controller'
       context 'when logged in as Customer One' do
         let(:headers) { valid_headers(@customer_one.user) }
         it 'returns customer details' do
@@ -61,20 +49,8 @@ RSpec.describe 'Customers API', type: :request do
       before {
         get '/customers/companies', params: {}, headers: headers
       }
-      context 'when not logged in' do
-        let(:headers) { invalid_headers }
-        it 'responds with 422' do
-          expect(response.status).to eq(422)
-          expect(response.body).to match(/Missing token/)
-        end
-      end
-      context 'when logged in as non-customer user' do
-        let(:headers) { valid_headers(@non_customer_user) }
-        it 'responds with 401' do
-          expect(response.status).to eq(401)
-          expect(response.body).to match(/User is not a customer/)
-        end
-      end
+      it_behaves_like 'authenticated controller'
+      it_behaves_like 'customer-only controller'
       context 'when logged in as Customer One' do
         let(:headers) { valid_headers(@customer_one.user) }
         it 'returns companies' do
@@ -100,20 +76,8 @@ RSpec.describe 'Customers API', type: :request do
       before {
         get '/customers/locations', params: {}, headers: headers
       }
-      context 'when not logged in' do
-        let(:headers) { invalid_headers }
-        it 'responds with 422' do
-          expect(response.status).to eq(422)
-          expect(response.body).to match(/Missing token/)
-        end
-      end
-      context 'when logged in as non-customer user' do
-        let(:headers) { valid_headers(@non_customer_user) }
-        it 'responds with 401' do
-          expect(response.status).to eq(401)
-          expect(response.body).to match(/User is not a customer/)
-        end
-      end
+      it_behaves_like 'authenticated controller'
+      it_behaves_like 'customer-only controller'
       context 'when logged in as Customer One' do
         let(:headers) { valid_headers(@customer_one.user) }
         it 'returns customer locations' do
@@ -146,13 +110,7 @@ RSpec.describe 'Customers API', type: :request do
       before {
         post '/customers/request', params: {}, headers: headers
       }
-      context 'when not logged in' do
-        let(:headers) { invalid_headers }
-        it 'responds with 422' do
-          expect(response.status).to eq(422)
-          expect(response.body).to match(/Missing token/)
-        end
-      end
+      it_behaves_like 'authenticated controller'
       context 'when logged in as existing customer' do
         let(:headers) { valid_headers(existing_customer.user) }
         it 'responds with 400' do
@@ -188,13 +146,7 @@ RSpec.describe 'Customers API', type: :request do
         post '/customers/enable', params: {invite_key: invite_key_param}.to_json, headers: headers
       }
       let(:invite_key_param) { invite_key }
-      context 'when not logged in' do
-        let(:headers) { invalid_headers }
-        it 'responds with 422' do
-          expect(response.status).to eq(422)
-          expect(response.body).to match(/Missing token/)
-        end
-      end
+      it_behaves_like 'authenticated controller'
       context 'when logged in as existing customer' do
         let(:headers) { valid_headers(existing_customer.user) }
         it 'responds with 400' do
@@ -228,7 +180,6 @@ RSpec.describe 'Customers API', type: :request do
         end
       end
     end
-
   end
 
 end

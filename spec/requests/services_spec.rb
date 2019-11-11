@@ -1,22 +1,5 @@
 require 'rails_helper'
 
-def security_checks
-  context 'when not logged in' do
-    let(:headers) { invalid_headers }
-    it 'responds with 422 (unprocessable entity)' do
-      expect(response.status).to eq(422)
-      expect(response.body).to match(/Missing token/)
-    end
-  end
-  context 'when logged in as non-provider' do
-    let(:headers) { valid_headers(@plain_user) }
-    it 'responds with 401 (unauthorized)' do
-      expect(response.status).to eq(401)
-      expect(response.body).to match(/User is not a provider/)
-    end
-  end
-end
-
 RSpec.describe 'Services API', type: :request do
 
   before {
@@ -43,7 +26,8 @@ RSpec.describe 'Services API', type: :request do
       # Call API
       get '/services', params: {}, headers: headers
     }
-    security_checks
+    it_behaves_like 'authenticated controller'
+    it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
       let(:headers) { valid_headers(@provider_user) }
       it 'responds with 200 (OK)' do
@@ -69,7 +53,8 @@ RSpec.describe 'Services API', type: :request do
     before {
       post '/services', params: params, headers: headers
     }
-    security_checks
+    it_behaves_like 'authenticated controller'
+    it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
       let(:headers) { valid_headers(@provider_user) }
       context 'when service name is missing' do
@@ -109,7 +94,8 @@ RSpec.describe 'Services API', type: :request do
     before {
       put "/services/#{service_id}", params: params, headers: headers
     }
-    security_checks
+    it_behaves_like 'authenticated controller'
+    it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
       let(:headers) { valid_headers(@provider_user) }
       context 'when service does not exist' do
@@ -157,7 +143,8 @@ RSpec.describe 'Services API', type: :request do
     before {
       post "/services/add/#{service_id}", params: {}, headers: headers
     }
-    security_checks
+    it_behaves_like 'authenticated controller'
+    it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
       let(:headers) { valid_headers(@provider_user) }
       context 'when service does not exist' do
@@ -195,7 +182,8 @@ RSpec.describe 'Services API', type: :request do
     before {
       post "/services/remove/#{service_id}", params: {}, headers: headers
     }
-    security_checks
+    it_behaves_like 'authenticated controller'
+    it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
       let(:headers) { valid_headers(@provider_user) }
       context 'when service does not exist' do

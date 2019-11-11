@@ -31,13 +31,7 @@ RSpec.describe 'Locations API', type: :request do
     before {
       get '/locations', params: {}, headers: headers
     }
-    context 'when not logged in' do
-      let(:headers) { invalid_headers }
-      it 'responds with 422' do
-        expect(response.status).to eq(422)
-        expect(response.body).to match(/Missing token/)
-      end
-    end
+    it_behaves_like 'authenticated controller'
     context 'when logged in as plain user' do
       let(:headers) { valid_headers(@plain_user) }
       it 'responds with empty payload' do
@@ -89,13 +83,7 @@ RSpec.describe 'Locations API', type: :request do
     let(:params) {
       {street_address: @test_street_address, postcode: @test_postcode}.to_json
     }
-    context 'when not logged in' do
-      let(:headers) { invalid_headers }
-      it 'responds with 422' do
-        expect(response.status).to eq(422)
-        expect(response.body).to match(/Missing token/)
-      end
-    end
+    it_behaves_like 'authenticated controller'
     context 'when logged in' do
       let(:headers) { valid_headers(@plain_user) }
       context 'when parameters are valid' do
@@ -128,13 +116,7 @@ RSpec.describe 'Locations API', type: :request do
     let(:params) {
       {street_address: @test_street_address, postcode: @test_postcode}.to_json
     }
-    context 'when not logged in' do
-      let(:headers) { invalid_headers }
-      it 'responds with 422' do
-        expect(response.status).to eq(422)
-        expect(response.body).to match(/Missing token/)
-      end
-    end
+    it_behaves_like 'authenticated controller'
     context 'when logged in' do
       let(:headers) { valid_headers(@plain_user) }
       context 'when location exists' do
@@ -165,13 +147,7 @@ RSpec.describe 'Locations API', type: :request do
       post "/locations/link-customer/#{location_id}", params: {}, headers: headers
     }
     let(:location_id) { @locations[4].id }
-    context 'when not logged in' do
-      let(:headers) { invalid_headers }
-      it 'responds with 422' do
-        expect(response.status).to eq(422)
-        expect(response.body).to match(/Missing token/)
-      end
-    end
+    it_behaves_like 'authenticated controller'
     context 'when logged in as customer' do
       let(:headers) { valid_headers(@customer.user) }
       context 'when location does not exist' do
@@ -217,13 +193,7 @@ RSpec.describe 'Locations API', type: :request do
       post "/locations/link-provider/#{location_id}", params: {}, headers: headers
     }
     let(:location_id) { @locations[4].id }
-    context 'when not logged in' do
-      let(:headers) { invalid_headers }
-      it 'responds with 422' do
-        expect(response.status).to eq(422)
-        expect(response.body).to match(/Missing token/)
-      end
-    end
+    it_behaves_like 'authenticated controller'
     context 'when logged in as provider' do
       let(:headers) { valid_headers(@provider.user) }
       context 'when location does not exist' do
