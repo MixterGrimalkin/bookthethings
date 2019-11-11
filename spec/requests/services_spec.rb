@@ -1,35 +1,79 @@
 require 'rails_helper'
 
+RSpec.shared_examples 'services validator' do
+  let(:nameless_service_params) {
+    result = valid_service_params
+    result['name'] = nil
+    result
+  }
+  let(:bad_length_service_params) {
+    result = valid_service_params
+    result['min_length'] = 120
+    result['max_length'] = 60
+    result
+  }
+  let(:bad_resolution_service_params) {
+    result = valid_service_params
+    result['booking_resolution'] = 45
+    result
+  }
+  context 'when service name is missing' do
+    let(:params) { nameless_service_params.to_json }
+    it 'responds with 422 (unprocessable entity)' do
+      expect(response.status).to eq(422)
+      expect(response.body).to match(/Name can't be blank/)
+    end
+  end
+  context 'when service length range is invalid' do
+    let(:params) { bad_length_service_params.to_json }
+    it 'responds with 422 (unprocessable entity)' do
+      expect(response.status).to eq(422)
+      expect(response.body).to match(/Length range can't be negative/)
+    end
+  end
+  context 'when service booking resolution is invalid' do
+    let(:params) { bad_resolution_service_params.to_json }
+    it 'responds with 422 (unprocessable entity)' do
+      expect(response.status).to eq(422)
+      expect(response.body).to match(/Length must be a multiple of resolution/)
+    end
+  end
+end
+
 RSpec.describe 'Services API', type: :request do
 
   before {
-    # A User who is not a Provider
-    @plain_user = create(:user)
+    @provider = create(:provider)
 
-    # A User who is a Provider
-    @provider_user = create(:user)
-    @provider = create(:provider, user: @provider_user)
-
-    # Two services that she provides
     @service_one = create(:service)
     @service_two = create(:service)
     @provider.services << @service_one
     @provider.services << @service_two
 
-    # One service she does NOT provider
     @service_three = create(:service)
   }
+
+  let(:service_id) { 0 }
+  let(:valid_service_params) {
+    {
+        'name' => 'My Lovely Service',
+        'description' => 'Fetlocks Blowing in the Wind',
+        'min_length' => 60,
+        'max_length' => 120,
+        'booking_resolution' => 60
+    }
+  }
+  let(:params) { {}.to_json }
 
   # List Services
   describe 'GET /services' do
     before {
-      # Call API
       get '/services', params: {}, headers: headers
     }
     it_behaves_like 'authenticated controller'
     it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
-      let(:headers) { valid_headers(@provider_user) }
+      let(:headers) { valid_headers(@provider.user) }
       it 'responds with 200 (OK)' do
         expect(response.status).to eq(200)
       end
@@ -41,13 +85,6 @@ RSpec.describe 'Services API', type: :request do
     end
   end
 
-  let(:service_id) { 0 }
-  let(:test_service_name) { 'My New Service' }
-  let(:test_service_description) { 'It is very lovely' }
-  let(:params) {
-    {name: test_service_name, description: test_service_description}.to_json
-  }
-
   # Create a Service
   describe 'POST /services' do
     before {
@@ -56,16 +93,10 @@ RSpec.describe 'Services API', type: :request do
     it_behaves_like 'authenticated controller'
     it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
-      let(:headers) { valid_headers(@provider_user) }
-      context 'when service name is missing' do
-        let(:params) { {}.to_json }
-        # database validation will throw an error if name is blank
-        it 'responds with 422 (unprocessable entity)' do
-          expect(response.status).to eq(422)
-          expect(response.body).to match(/Name can't be blank/)
-        end
-      end
-      context 'when service name is provided' do
+      let(:headers) { valid_headers(@provider.user) }
+      it_behaves_like 'services validator'
+      context 'when service is valid' do
+        let(:params) { valid_service_params.to_json }
         it 'responds with 200' do
           expect(response.status).to eq(200)
           expect(json['message']).to match(/Service created/)
@@ -76,14 +107,11 @@ RSpec.describe 'Services API', type: :request do
         it 'creates a service' do
           expect(Service.count).to eq(4)
           service = Service.last
-          expect(service.name).to eq(test_service_name)
-          expect(service.description).to eq(test_service_description)
+          expect(compare_services(valid_service_params, service, [:id])).to be (true)
         end
         it 'adds service to provider' do
           expect(@provider.services.count).to eq(3)
-          service = @provider.services.last
-          expect(service.name).to eq(test_service_name)
-          expect(service.description).to eq(test_service_description)
+          expect(@provider.services.last.id).to eq(Service.last.id)
         end
       end
     end
@@ -97,7 +125,7 @@ RSpec.describe 'Services API', type: :request do
     it_behaves_like 'authenticated controller'
     it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
-      let(:headers) { valid_headers(@provider_user) }
+      let(:headers) { valid_headers(@provider.user) }
       context 'when service does not exist' do
         it 'responds with 404 (not found)' do
           expect(response.status).to eq(404)
@@ -114,23 +142,16 @@ RSpec.describe 'Services API', type: :request do
       end
       context 'when service exists and is provided' do
         let(:service_id) { @service_one.id }
-        context 'when name is missing' do
-          let(:params) { {name: nil, description: nil}.to_json }
-          # database validation will throw an error if name is blank
-          it 'responds with 422 (unprocessable entity)' do
-            expect(response.status).to eq(422)
-            expect(response.body).to match(/Name can't be blank/)
-          end
-        end
-        context 'when name is present' do
+        it_behaves_like 'services validator'
+        context 'when service is valid' do
+          let(:params) { valid_service_params.to_json }
           it 'responds with 200 (OK)' do
             expect(response.status).to eq(200)
             expect(response.body).to match(/OK/)
           end
           it 'updates the service' do
             @service_one.reload
-            expect(@service_one.name).to eq(test_service_name)
-            expect(@service_one.description).to eq(test_service_description)
+            expect(compare_services(valid_service_params, @service_one, [:id])).to be (true)
           end
         end
       end
@@ -146,7 +167,7 @@ RSpec.describe 'Services API', type: :request do
     it_behaves_like 'authenticated controller'
     it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
-      let(:headers) { valid_headers(@provider_user) }
+      let(:headers) { valid_headers(@provider.user) }
       context 'when service does not exist' do
         it 'responds with 404 (not found)' do
           expect(response.status).to eq(404)
@@ -168,10 +189,7 @@ RSpec.describe 'Services API', type: :request do
         end
         it 'adds service to provider' do
           expect(@provider.services.count).to eq(3)
-          service = @provider.services.last
-          expect(service.id).to eq(@service_three.id)
-          expect(service.name).to eq(@service_three.name)
-          expect(service.description).to eq(@service_three.description)
+          expect(@provider.services.last.id).to eq(@service_three.id)
         end
       end
     end
@@ -185,7 +203,7 @@ RSpec.describe 'Services API', type: :request do
     it_behaves_like 'authenticated controller'
     it_behaves_like 'provider-only controller'
     context 'when logged in as provider' do
-      let(:headers) { valid_headers(@provider_user) }
+      let(:headers) { valid_headers(@provider.user) }
       context 'when service does not exist' do
         it 'responds with 404 (not found)' do
           expect(response.status).to eq(404)

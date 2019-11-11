@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191104184722) do
+ActiveRecord::Schema.define(version: 20191111153054) do
 
   create_table "availabilities", force: :cascade do |t|
     t.integer "provider_id"
@@ -136,6 +136,9 @@ ActiveRecord::Schema.define(version: 20191104184722) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "booking_resolution", default: 60
+    t.integer "min_length"
+    t.integer "max_length"
   end
 
   create_table "users", force: :cascade do |t|

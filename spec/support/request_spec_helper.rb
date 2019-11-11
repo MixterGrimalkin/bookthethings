@@ -4,26 +4,32 @@ module RequestSpecHelper
     JSON.parse(response.body)
   end
 
-  def compare_users(api_obj, user)
-    compare_objects([:name, :email, :phone], api_obj, user)
+  def compare_users(api_obj, user, ignore_keys = [])
+    keys = [:name, :email, :phone]
+    compare_objects(keys, api_obj, user, ignore_keys)
   end
 
-  def compare_locations(api_obj, location)
-    compare_objects([:id, :street_address, :postcode], api_obj, location)
+  def compare_locations(api_obj, location, ignore_keys = [])
+    keys = [:id, :street_address, :postcode]
+    compare_objects(keys, api_obj, location, ignore_keys)
   end
 
-  def compare_companies(api_obj, company)
-    compare_objects([:id, :name, :slug, :description, :login_html], api_obj, company)
+  def compare_companies(api_obj, company, ignore_keys = [])
+    keys = [:id, :name, :slug, :description, :login_html]
+    compare_objects(keys, api_obj, company, ignore_keys)
   end
 
-  def compare_services(api_obj, service)
-    compare_objects([:id, :name, :description], api_obj, service)
+  def compare_services(api_obj, service, ignore_keys = [])
+    keys = [:id, :name, :description, :min_length, :max_length, :booking_resolution]
+    compare_objects(keys, api_obj, service, ignore_keys)
   end
 
-  def compare_objects(keys, api_obj, db_obj)
+  def compare_objects(keys, api_obj, db_obj, ignore_keys = [])
     result = true
     keys.each do |key|
-      result &= db_obj.send(key) == api_obj[key.to_s]
+      unless ignore_keys.include? key
+        result &= db_obj.send(key) == api_obj[key.to_s]
+      end
     end
     result
   end
