@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191111153054) do
+ActiveRecord::Schema.define(version: 20191111173811) do
 
   create_table "availabilities", force: :cascade do |t|
     t.integer "provider_id"
@@ -121,14 +121,14 @@ ActiveRecord::Schema.define(version: 20191111153054) do
   end
 
   create_table "rates", force: :cascade do |t|
-    t.string "name"
     t.integer "cost_amount"
-    t.string "cost_per"
-    t.integer "min_length"
     t.integer "service_id"
-    t.integer "provider_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "cost_per"
+    t.integer "day"
+    t.time "start_time"
+    t.time "end_time"
   end
 
   create_table "services", force: :cascade do |t|

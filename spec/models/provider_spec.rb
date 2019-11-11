@@ -7,6 +7,5 @@ RSpec.describe Provider, type: :model do
   it { should have_many :services }
   it { should have_many :locations }
   it { should have_many :bookings }
-  it { should have_many :rates }
   it { should have_many :availabilities }
 end
