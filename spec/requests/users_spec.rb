@@ -2,19 +2,19 @@ require 'rails_helper'
 
 RSpec.describe 'Users API', type: :request do
 
-  let(:user) { build(:user) }
-
-  let(:valid_attributes) do
-    attributes_for(:user, password_confirmation: user.password)
-  end
+  let(:existing_user) { create(:user) }
 
   describe 'POST /signup' do
+    before {
+      post '/signup', params: params, headers: invalid_headers
+    }
     context 'when valid request' do
-      before {
-        post '/signup', params: valid_attributes.to_json, headers: invalid_headers
-      }
-      it 'creates a new user' do
+      let(:params) { attributes_for(:user, password_confirmation: existing_user.password).to_json }
+      it 'responds with 201 (created)' do
         expect(response).to have_http_status(201)
+      end
+      it 'creates a new user' do
+        expect(User.count).to eq(2)
       end
       it 'returns success message' do
         expect(json['message']).to match(/Account created successfully/)
@@ -23,10 +23,17 @@ RSpec.describe 'Users API', type: :request do
         expect(json['auth_token']).not_to be_nil
       end
     end
+    context 'when email already exists' do
+      let(:params) { attributes_for(:user, email: existing_user.email, password_confirmation: existing_user.password).to_json }
+      it 'responds with 422 (unprocessable entity)' do
+        expect(response.status).to eq(422)
+      end
+      it 'responds with an error message' do
+        expect(response.body).to match(/Email has already been taken/)
+      end
+    end
     context 'when invalid request' do
-      before {
-        post '/signup', params: {}, headers: invalid_headers
-      }
+      let(:params) { {}.to_json }
       it 'does not create a new user' do
         expect(response).to have_http_status(422)
       end
