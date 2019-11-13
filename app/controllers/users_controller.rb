@@ -10,15 +10,17 @@ class UsersController < ApplicationController
   end
 
   def user_details
-    json_response(
-        {
-            name: @current_user.name,
-            email: @current_user.email,
-            phone: @current_user.phone,
-            is_customer: !@current_user.customer.nil?,
-            is_provider: !@current_user.provider.nil?
-        }
-    )
+    data = {
+        name: @current_user.name,
+        email: @current_user.email,
+        phone: @current_user.phone,
+        is_customer: !@current_user.customer.nil?,
+        is_provider: !@current_user.provider.nil?
+    }
+    if @current_user.provider
+      data[:company] = @current_user.provider.company.name
+    end
+    json_response(data)
   end
 
   private

@@ -74,6 +74,7 @@ RSpec.describe 'Users API', type: :request do
         expect(compare_users(json, @user)).to be(true)
         expect(json['is_customer']).to be(false)
         expect(json['is_provider']).to be(false)
+        expect(json['company']).to be_nil
       end
     end
     context 'when logged in as customer' do
@@ -86,6 +87,7 @@ RSpec.describe 'Users API', type: :request do
         expect(compare_users(json, @customer.user)).to be(true)
         expect(json['is_customer']).to be(true)
         expect(json['is_provider']).to be(false)
+        expect(json['company']).to be_nil
       end
     end
     context 'when logged in as provider' do
@@ -94,10 +96,11 @@ RSpec.describe 'Users API', type: :request do
         expect(response.status).to eq(200)
       end
       it 'returns details of provider user' do
-        expect(json.size).to eq(5)
+        expect(json.size).to eq(6)
         expect(compare_users(json, @provider.user)).to be(true)
         expect(json['is_customer']).to be(false)
         expect(json['is_provider']).to be(true)
+        expect(json['company']).to eq(@provider.company.name)
       end
     end
     context 'when logged in as customer and provider' do
@@ -106,10 +109,11 @@ RSpec.describe 'Users API', type: :request do
         expect(response.status).to eq(200)
       end
       it 'returns details of customer and provider user' do
-        expect(json.size).to eq(5)
+        expect(json.size).to eq(6)
         expect(compare_users(json, @both_user)).to be(true)
         expect(json['is_customer']).to be(true)
         expect(json['is_provider']).to be(true)
+        expect(json['company']).to eq(@both_provider.company.name)
       end
     end
   end
