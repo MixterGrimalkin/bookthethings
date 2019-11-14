@@ -1,9 +1,29 @@
 class RatesController < ApplicationController
 
   before_action :providers_only
-  before_action :must_provide_service
+  before_action :must_provide_service, except: :get_all_rates
 
   API_KEYS = [:day, :start_time, :end_time, :cost_amount, :cost_per]
+  SERVICE_API_KEYS = [:name, :description, :min_length, :max_length, :booking_resolution]
+
+  def get_all_rates
+    data = []
+    @current_user.provider.services.each do |service|
+      service_data = {id: service.id, rates: []}
+      SERVICE_API_KEYS.each do |key|
+        service_data[key] = service.send(key)
+      end
+      service.rates.each do |rate|
+        rate_data = {id: rate.id}
+        API_KEYS.each do |key|
+          rate_data[key] = rate.send(key)
+        end
+        service_data[:rates] << rate_data
+      end
+      data << service_data
+    end
+    json_response(data)
+  end
 
   def get_rates
     json_response(@service.rates.select(:id, :service_id, *API_KEYS).to_json)

@@ -162,6 +162,33 @@ RSpec.describe 'Rates API', type: :request do
   let(:rate_id) { 0 }
   let(:params) { {}.to_json }
 
+  describe 'GET /rates' do
+    before {
+      get '/rates', params: {}, headers: headers
+    }
+    it_behaves_like 'authenticated controller'
+    context 'when logged in as provider' do
+      let(:headers) { valid_headers(@provider.user) }
+      it 'responds with 200 (OK)' do
+        expect(response.status).to eq(200)
+      end
+      it 'returns two services with rates' do
+        expect(json.size).to eq(2)
+        expect(compare_services(json[0], @service_a)).to be(true)
+        expect(compare_services(json[1], @service_b)).to be(true)
+
+        rates_a = json[0]['rates']
+        expect(rates_a.size).to eq(2)
+        expect(compare_rates(rates_a[0], @rate_a_one, [:service_id])).to be(true)
+        expect(compare_rates(rates_a[1], @rate_a_two, [:service_id])).to be(true)
+
+        rates_b = json[1]['rates']
+        expect(rates_b.size).to eq(1)
+        expect(compare_rates(rates_b[0], @rate_b_one, [:service_id])).to be(true)
+      end
+    end
+  end
+
   describe 'GET /services/:service_id/rates' do
     before {
       get "/services/#{service_id}/rates", params: params, headers: headers
