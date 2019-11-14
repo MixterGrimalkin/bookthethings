@@ -3,9 +3,6 @@ class RatesController < ApplicationController
   before_action :providers_only
   before_action :must_provide_service, except: :get_all_rates
 
-  API_KEYS = [:day, :start_time, :end_time, :cost_amount, :cost_per]
-  SERVICE_API_KEYS = [:name, :description, :min_length, :max_length, :booking_resolution]
-
   def get_all_rates
     data = []
     @current_user.provider.services.each do |service|
@@ -15,7 +12,7 @@ class RatesController < ApplicationController
       end
       service.rates.each do |rate|
         rate_data = {id: rate.id}
-        API_KEYS.each do |key|
+        RATE_API_KEYS.each do |key|
           rate_data[key] = rate.send(key)
         end
         service_data[:rates] << rate_data
@@ -26,11 +23,11 @@ class RatesController < ApplicationController
   end
 
   def get_rates
-    json_response(@service.rates.select(:id, :service_id, *API_KEYS).to_json)
+    json_response(@service.rates.select(:id, :service_id, *RATE_API_KEYS).to_json)
   end
 
   def create_rate
-    config = params.permit(*API_KEYS)
+    config = params.permit(*RATE_API_KEYS)
     config[:service] = @service
     rate = Rate.create!(config)
     json_response({message: 'Rate created', id: rate.id})
@@ -38,7 +35,7 @@ class RatesController < ApplicationController
 
   def update_rate
     rate = @service.rates.find(params[:rate_id])
-    rate.update!(params.permit(*API_KEYS))
+    rate.update!(params.permit(*RATE_API_KEYS))
     json_response({message: 'Rate updated'})
   end
 

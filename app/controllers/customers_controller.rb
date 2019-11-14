@@ -15,29 +15,11 @@ class CustomersController < ApplicationController
   end
 
   def locations
-    json_response(
-        @current_user.customer.locations.collect do |location|
-          {
-              id: location.id,
-              street_address: location.street_address,
-              postcode: location.postcode
-          }
-        end
-    )
+    json_response(@current_user.customer.locations.select(:id, *LOCATION_API_KEYS))
   end
 
   def companies
-    json_response(
-        @current_user.customer.companies.collect do |company|
-          {
-              id: company.id,
-              name: company.name,
-              slug: company.slug,
-              description: company.description,
-              login_html: company.login_html
-          }
-        end
-    )
+    json_response(@current_user.customer.companies.select(:id, *COMPANY_API_KEYS))
   end
 
   def request_customership

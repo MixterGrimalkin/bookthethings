@@ -6,22 +6,22 @@ class LocationsController < ApplicationController
   def get_locations
     data = {}
     if (customer = @current_user.customer)
-      data[:customer] = customer.locations.select(:id, :street_address, :postcode)
+      data[:customer] = customer.locations.select(:id, *LOCATION_API_KEYS)
     end
     if (provider = @current_user.provider)
-      data[:provider] = provider.locations.select(:id, :street_address, :postcode)
+      data[:provider] = provider.locations.select(:id, *LOCATION_API_KEYS)
     end
     json_response(data)
   end
 
   def create_location
-    location = Location.create!(params.permit(:street_address, :postcode))
+    location = Location.create!(params.permit(LOCATION_API_KEYS))
     json_response({message: 'Location created', id: location.id})
   end
 
   def update_location
     location = Location.find(params[:id])
-    location.update!(params.permit(:street_address, :postcode))
+    location.update!(params.permit(LOCATION_API_KEYS))
     json_response({message: 'Location updated'})
   end
 

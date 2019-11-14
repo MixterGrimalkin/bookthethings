@@ -10,22 +10,22 @@ module RequestSpecHelper
   end
 
   def compare_locations(api_obj, location, ignore_keys = [])
-    keys = [:id, :street_address, :postcode]
+    keys = [:id, *ApplicationController::LOCATION_API_KEYS]
     compare_objects(keys, api_obj, location, ignore_keys)
   end
 
   def compare_companies(api_obj, company, ignore_keys = [])
-    keys = [:id, :name, :slug, :description, :login_html]
+    keys = [:id, *ApplicationController::COMPANY_API_KEYS]
     compare_objects(keys, api_obj, company, ignore_keys)
   end
 
   def compare_services(api_obj, service, ignore_keys = [])
-    keys = [:id, :name, :description, :min_length, :max_length, :booking_resolution]
+    keys = [:id, *ApplicationController::SERVICE_API_KEYS]
     compare_objects(keys, api_obj, service, ignore_keys)
   end
 
   def compare_rates(api_obj, rate, ignore_keys = [])
-    keys = [:id, :day, :start_time, :end_time, :cost_amount, :cost_per, :service_id]
+    keys = [:id, *ApplicationController::RATE_API_KEYS]
     compare_objects(keys, api_obj, rate, ignore_keys)
   end
 
