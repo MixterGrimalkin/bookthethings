@@ -10,7 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191111173811) do
+ActiveRecord::Schema.define(version: 20191114151228) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "availabilities", force: :cascade do |t|
     t.integer "provider_id"
@@ -139,6 +142,7 @@ ActiveRecord::Schema.define(version: 20191111173811) do
     t.integer "booking_resolution", default: 60
     t.integer "min_length"
     t.integer "max_length"
+    t.string "color", default: "blue"
   end
 
   create_table "users", force: :cascade do |t|

@@ -45,12 +45,12 @@ RSpec.describe 'Services API', type: :request do
   before {
     @provider = create(:provider)
 
-    @service_one = create(:service)
-    @service_two = create(:service)
+    @service_one = create(:service, color: 'red')
+    @service_two = create(:service, color: 'purple')
     @provider.services << @service_one
     @provider.services << @service_two
 
-    @service_three = create(:service)
+    @service_three = create(:service, color: 'orange')
   }
 
   let(:service_id) { 0 }
@@ -60,7 +60,8 @@ RSpec.describe 'Services API', type: :request do
         'description' => 'Fetlocks Blowing in the Wind',
         'min_length' => 60,
         'max_length' => 120,
-        'booking_resolution' => 60
+        'booking_resolution' => 60,
+        'color' => 'green'
     }
   }
   let(:params) { {}.to_json }

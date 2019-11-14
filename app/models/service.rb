@@ -22,7 +22,7 @@ class ServiceValidator < ActiveModel::Validator
 end
 
 class Service < ApplicationRecord
-  validates_presence_of :name
+  validates_presence_of :name, :color
   validates_with ServiceValidator
 
   has_many :bookings

@@ -10,7 +10,7 @@ class ApplicationController < ActionController::API
 
   COMPANY_API_KEYS = [:name, :slug, :description, :login_html]
   LOCATION_API_KEYS = [:street_address, :postcode]
-  SERVICE_API_KEYS = [:name, :description, :min_length, :max_length, :booking_resolution]
+  SERVICE_API_KEYS = [:name, :description, :min_length, :max_length, :booking_resolution, :color]
   RATE_API_KEYS = [:day, :start_time, :end_time, :cost_amount, :cost_per]
 
   def authorize_request

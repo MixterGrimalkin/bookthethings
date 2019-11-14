@@ -1,5 +1,7 @@
 module RequestSpecHelper
 
+  PUTS_COMPARISON_ERRORS = false
+
   def json
     JSON.parse(response.body)
   end
@@ -34,6 +36,9 @@ module RequestSpecHelper
     keys.each do |key|
       unless ignore_keys.include? key
         result &= db_obj.send(key) == api_obj[key.to_s]
+        unless result || !PUTS_COMPARISON_ERRORS
+          puts "Object comparison error: #{key.to_s} (#{api_obj[key.to_s]} != #{db_obj.send(key)})"
+        end
       end
     end
     result
