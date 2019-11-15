@@ -162,9 +162,9 @@ RSpec.describe 'Rates API', type: :request do
   let(:rate_id) { 0 }
   let(:params) { {}.to_json }
 
-  describe 'GET /rates' do
+  describe 'GET /services/rates' do
     before {
-      get '/rates', params: {}, headers: headers
+      get '/services/rates', params: {}, headers: headers
     }
     it_behaves_like 'authenticated controller'
     context 'when logged in as provider' do
