@@ -45,6 +45,27 @@ class RatesController < ApplicationController
     json_response({message: 'Rate deleted'})
   end
 
+  def fill_days
+    rate = @service.rates.find(params[:rate_id])
+    days = params[:days] || []
+    if days.empty?
+      return json_response({message: 'Must specify days to fill'}, :bad_request)
+    end
+    count = 0
+    days.each do |day|
+      begin
+        new_rate = rate.dup
+        new_rate.day = day
+        new_rate.save!
+        @service.rates << new_rate
+        count += 1
+      rescue ActiveRecord::RecordInvalid
+        # Ignore clashes
+      end
+    end
+    json_response({message: "Created #{count} rates"})
+  end
+
   private
 
   def must_provide_service

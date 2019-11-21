@@ -30,5 +30,6 @@ Rails.application.routes.draw do
   post 'services/:service_id/rates', to: 'rates#create_rate'
   put 'services/:service_id/rates/:rate_id', to: 'rates#update_rate'
   delete 'services/:service_id/rates/:rate_id', to: 'rates#delete_rate'
+  post 'services/:service_id/rates/:rate_id/fill', to: 'rates#fill_days'
 
 end

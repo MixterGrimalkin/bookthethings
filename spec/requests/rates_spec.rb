@@ -306,4 +306,70 @@ RSpec.describe 'Rates API', type: :request do
     end
   end
 
+  describe 'POST /services/:service_id/rates/:rate_id/fill' do
+    before {
+      post "/services/#{service_id}/rates/#{rate_id}/fill", params: params, headers: headers
+    }
+    it_behaves_like 'authenticated controller'
+    it_behaves_like 'provider-only controller'
+    context 'when logged in as provider' do
+      let(:headers) { valid_headers(@provider.user) }
+      it_behaves_like 'service resource'
+      context 'when service valid' do
+        let(:service_id) { @service_a.id }
+        it_behaves_like 'rate resource'
+        context 'when rate exists in right service' do
+          let(:rate_id) { @rate_a_one.id }
+          context 'when days param missing' do
+            it 'returns 400 (bad request)' do
+              expect(response.status).to eq(400)
+              expect(response.body).to match(/Must specify days to fill/)
+            end
+          end
+          context 'when days list is empty' do
+            let(:params) {
+              {days: []}.to_json
+            }
+            it 'returns 400 (bad request)' do
+              expect(response.status).to eq(400)
+              expect(response.body).to match(/Must specify days to fill/)
+            end
+          end
+          context 'when days do not clash' do
+            let(:params) {
+              {days: [3, 4, 6]}.to_json
+            }
+            it 'returns 200 (OK)' do
+              expect(response.status).to eq(200)
+              expect(response.body).to match(/Created 3 rates/)
+            end
+            it 'creates three new rates on service' do
+              @service_a.reload
+              expect(@service_a.rates.count).to eq(5)
+              expect(compare_rates(@rate_a_one, @service_a.rates.all[2], [:id, :day])).to be(true)
+              expect(@service_a.rates.all[2].day).to eq(3)
+              expect(compare_rates(@rate_a_one, @service_a.rates.all[3], [:id, :day])).to be(true)
+              expect(@service_a.rates.all[3].day).to eq(4)
+              expect(compare_rates(@rate_a_one, @service_a.rates.all[4], [:id, :day])).to be(true)
+              expect(@service_a.rates.all[4].day).to eq(6)
+            end
+          end
+          context 'when days clash' do
+            let(:params) {
+              {days: [1, 2, 3, 4, 5, 6, 0]}.to_json
+            }
+            it 'returns 200 (OK)' do
+              expect(response.status).to eq(200)
+              expect(response.body).to match(/Created 5 rates/)
+            end
+            it 'creates 5 rates' do
+              @service_a.reload
+              expect(@service_a.rates.count).to eq(7)
+            end
+          end
+        end
+      end
+    end
+  end
+
 end
