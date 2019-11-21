@@ -10,44 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191114151228) do
+ActiveRecord::Schema.define(version: 20191121102433) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "availabilities", force: :cascade do |t|
-    t.integer "provider_id"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.datetime "repeat_weekly_until"
-    t.boolean "all_services"
-    t.boolean "all_locations"
-    t.boolean "remote_locations"
-    t.integer "base_location_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "availability_locations", force: :cascade do |t|
-    t.integer "availability_id"
-    t.integer "location_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "availability_rates", force: :cascade do |t|
-    t.integer "availability_id"
-    t.integer "rate_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "availability_services", force: :cascade do |t|
-    t.integer "availability_id"
-    t.integer "service_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "bookings", force: :cascade do |t|
     t.datetime "start_date"

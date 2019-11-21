@@ -31,8 +31,5 @@ class Service < ApplicationRecord
   has_many :provider_services
   has_many :providers, through: :provider_services
 
-  has_many :availability_services
-  has_many :availabilities, through: :availability_services
-
 end
 

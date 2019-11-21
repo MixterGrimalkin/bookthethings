@@ -9,7 +9,4 @@ class Location < ApplicationRecord
   has_many :provider_locations
   has_many :providers, through: :provider_locations
 
-  has_many :availability_locations
-  has_many :availabilities, through: :availability_locations
-
 end

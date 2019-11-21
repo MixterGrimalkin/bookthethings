@@ -11,6 +11,5 @@ class Provider < ApplicationRecord
   has_many :locations, through: :provider_locations
 
   has_many :bookings
-  has_many :availabilities
 
 end
